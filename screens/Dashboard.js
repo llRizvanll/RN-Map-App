@@ -47,8 +47,7 @@ const Dashboard: () => Node = () => {
           zoomTapEnabled={true}
         >
           <Marker
-            coordinate={{latitude: 37.7881322,
-              longitude: -122.4323198}}
+            coordinate={region}
             anchor={{ x: 0.5, y: 0.5 }}
             flat={true}
             rotation={0}
