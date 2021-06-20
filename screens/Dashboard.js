@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, { useCallback, useRef, useState } from "react";
 import type {Node} from 'react';
 import { Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -14,38 +14,78 @@ import { COLORS, FONTS } from "../constants/theme";
 import icons from "../constants/icons";
 
 const {width, height} = Dimensions.get('window');
+const deltaValue = 0.2;
+const maxZoomLevel = 10;
+const zoomLevelUsed = 10;
+const altitudeValue = 1000;
+const mapPitch = 45;
+const mapHeading = 90;
+const initLatitude = 37.78825;
+const initLongitude = -122.4324;
 
 const Dashboard: () => Node = () => {
+  const [isMapReady, setMapReady] = useState(false);
+  const _map = useRef(null);
+
+  const handleMapReady = useCallback(() => {
+    setMapReady(true);
+  }, [_map, setMapReady]);
 
   const [region, setRegion] = React.useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitude: initLatitude,
+    longitude: initLongitude,
+    latitudeDelta: deltaValue,
+    longitudeDelta: deltaValue,
   })
 
   React.useEffect( () => {
-    setRegion({
-      latitude: 37.78825,
-      longitude: -122.4324,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
-    })
+    if(_map.current) {
+      _map.current.animateCamera(
+        {
+          center: {
+            latitude: region.latitude,
+            longitude: region.longitude,
+            latitudeDelta: deltaValue,
+            longitudeDelta: deltaValue,
+          },
+          zoom: zoomLevelUsed
+        },
+        5000
+      );
+    }
   })
   return (
     <View style={styles.container}>
       <View style={{ flex:1,flexDirection:'column'}}>
         <MapView
-          style={styles.mapcontainer}
+          ref={_map}
+          style={isMapReady ? styles.mapcontainer : {}}
+          onMapReady={handleMapReady}
+          initialCamera={{
+            center: {
+              latitude: region.latitude,
+              longitude: region.longitude,
+              latitudeDelta: deltaValue,
+              longitudeDelta: deltaValue,
+            },
+            pitch: mapPitch,
+            heading: mapHeading,
+            altitude: altitudeValue,
+            zoom: zoomLevelUsed,
+          }}
           showsUserLocation={true}
-          showsMyLocationButton={false}
-          zoomEnabled={true}
-          provider={PROVIDER_GOOGLE}
-          region={region}
-          onRegionChange={setRegion}
+          showsMyLocationButton={true}
+          moveOnMarkerPress={true}
           zoomControlEnabled={true}
           zoomTapEnabled={true}
-        >
+          provider={PROVIDER_GOOGLE}
+          region={region}
+          zoomEnabled={true}
+          toolbarEnabled={true}
+          showsTraffic={false}
+          onRegionChangeComplete={region => setRegion(region)}
+          onMapReady={handleMapReady}
+          >
           <Marker
             coordinate={region}
             anchor={{ x: 0.5, y: 0.5 }}
@@ -62,7 +102,8 @@ const Dashboard: () => Node = () => {
           </Marker>
         </MapView>
         <View style={{ position:"absolute",top:0,height:60,backgroundColor:COLORS.white,
-          width:'95%',marginTop:20, marginLeft:10, borderRadius:10, padding:6,zIndex:20,
+          width:'95%',marginTop:20,
+          marginLeft:10, borderRadius:10, padding:6,
         ...FONTS.box_shadow}}>
           <TextInput placeholder={"Please enter pickup"}
                      placeholderTextColor={COLORS.blue}
@@ -70,7 +111,7 @@ const Dashboard: () => Node = () => {
                      style={{textDecorationColor:COLORS.black, marginLeft:10,...FONTS.regularText}} />
         </View>
         <View style={{ position:"absolute",top:65,height:60,backgroundColor:COLORS.white,
-          width:'95%',marginTop:20, marginLeft:10, borderRadius:10, padding:6,zIndex:20,
+          width:'95%',marginTop:20, marginLeft:10, borderRadius:10, padding:6,
           ...FONTS.box_shadow}}>
           <TextInput placeholder={"Please enter drop off"}
                      placeholderTextColor={COLORS.blue}
@@ -125,10 +166,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mapcontainer: {
-    flex: 1,
     width: width,
-    height: height,
+    height: height-80,
   },
+  mapStyle: {
+    flex: 1,
+    marginLeft: 1
+  }
 });
 
 export default Dashboard;
