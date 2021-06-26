@@ -8,14 +8,14 @@
 
 import React, { useCallback, useRef, useState } from "react";
 import type {Node} from 'react';
-import { Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, StyleSheet, PermissionsAndroid, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { COLORS, FONTS } from "../constants/theme";
 import icons from "../constants/icons";
+import Geolocation from "@react-native-community/geolocation";
 
 const {width, height} = Dimensions.get('window');
-const deltaValue = 0.2;
-const maxZoomLevel = 10;
+const deltaValue = 0.02;
 const zoomLevelUsed = 10;
 const altitudeValue = 1000;
 const mapPitch = 45;
@@ -23,9 +23,14 @@ const mapHeading = 90;
 const initLatitude = 37.78825;
 const initLongitude = -122.4324;
 
+
+
 const Dashboard: () => Node = () => {
   const [isMapReady, setMapReady] = useState(false);
   const _map = useRef(null);
+
+  //marker ref
+  const _marker_map = useRef(null);
 
   const handleMapReady = useCallback(() => {
     setMapReady(true);
@@ -37,6 +42,66 @@ const Dashboard: () => Node = () => {
     latitudeDelta: deltaValue,
     longitudeDelta: deltaValue,
   })
+
+  //Location Reader
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: "Trucks247 Location Permission",
+          message:
+            "App needs your permission to show location based trucks availability",
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK"
+        }
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("You can use the location");
+        getLocationAsync();
+      } else {
+        console.log("Location permission denied");
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+//Get the current location
+  const getLocationAsync = async () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+
+        //get the Longitude from the location json
+        const curLongitude = position.coords.longitude;
+        //get the Latitude from the location json
+        const curLatitude =  position.coords.latitude;
+
+        const longitudeDelta = deltaValue
+        const latitudeDelta  = deltaValue
+        console.log('current location: ',curLatitude,curLongitude);
+        setRegion({latitude:curLatitude,longitude:curLongitude, latitudeDelta:latitudeDelta,longitudeDelta:longitudeDelta});
+
+
+      }, (error) => {
+        const { code, message } = error;
+
+        if (code === 'CANCELLED') {
+          Alert.alert('Location cancelled by user or by another request');
+        }
+        if (code === 'UNAVAILABLE') {
+          Alert.alert('Location service is disabled or unavailable');
+        }
+        if (code === 'TIMEOUT') {
+          Alert.alert('Location request timed out');
+        }
+        if (code === 'UNAUTHORIZED') {
+          Alert.alert('Authorization denied');
+        }
+      }, {
+        enableHighAccuracy: true, timeout: 20000, maximumAge: 5000,showLocationDialog: true   });
+  };
 
   React.useEffect( () => {
     if(_map.current) {
@@ -54,6 +119,7 @@ const Dashboard: () => Node = () => {
       );
     }
   })
+
   return (
     <View style={styles.container}>
       <View style={{ flex:1,flexDirection:'column'}}>
@@ -84,11 +150,13 @@ const Dashboard: () => Node = () => {
           toolbarEnabled={true}
           showsTraffic={false}
           onRegionChangeComplete={region => setRegion(region)}
-          onMapReady={handleMapReady}
+
           >
           <Marker
+            ref={_marker_map}
             coordinate={region}
             anchor={{ x: 0.5, y: 0.5 }}
+            draggable={true}
             flat={true}
             rotation={0}
           >
@@ -130,6 +198,9 @@ const Dashboard: () => Node = () => {
 
         <TouchableOpacity
           onPress={() => {
+            requestCameraPermission();
+            //getLocation();
+            //getLocationAsync();
           }}
         >
           <View style={{flexDirection:'column', alignItems:'center'}}>
