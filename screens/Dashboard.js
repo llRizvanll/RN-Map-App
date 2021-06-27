@@ -203,23 +203,11 @@ const Dashboard: () => Node = () => {
           }}>
             <Text style={{...FONTS.h3, marginLeft:10, padding:5,color:COLORS.blue, fontWeight:'bold'}}>Turn on location permission ></Text>
           </TouchableOpacity>
-          <View style={{height:1,backgroundColor:COLORS.gray}}></View>
-          <View style={{ minHeight:60,padding:5,flex:1,backgroundColor: '#ecf0f1',
-            textDecorationColor:COLORS.black, marginBottom:5, marginLeft:10,...FONTS.regularText,
-            }}>
-            {/*<TextInput placeholder={"Enter PICKUP location"}*/}
-            {/*           placeholderTextColor={COLORS.black}*/}
-            {/*           numberOfLines={1}*/}
-            {/*           style={{*/}
-            {/*             textDecorationColor:COLORS.black, marginLeft:5,...FONTS.regularText,*/}
-            {/*             lineHeight:20,*/}
-            {/*             padding:10,*/}
-            {/*             fontWeight:'bold'}} />*/}
-            <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces} sourceTarget={true}/>
-
+          <View style={{height:0.5,backgroundColor:COLORS.gray}}></View>
+          <View style={{ minHeight:40,flex:1, margin:5,...FONTS.regularText}}>
+            <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces} sourceTarget={true} placeholderText={'Enter PICKUP location'}/>
           </View>
-
-          <View style={{height:1,backgroundColor:COLORS.gray}}></View>
+          <View style={{height:0.5,backgroundColor:COLORS.gray}}></View>
 
         </View>
       </View>
@@ -231,25 +219,17 @@ const Dashboard: () => Node = () => {
         flexDirection:'column',
         bottom:0,
          }}>
-        <View style={{ minHeight:60,backgroundColor:COLORS.white,
-          width:'95%', marginLeft:10, marginBottom:5, borderRadius:10, padding:6,
+        <View style={{ minHeight:40,backgroundColor:COLORS.white,
+          width:'100%', margin:1,padding:6,
           ...FONTS.box_shadow}}>
-          {/*<TextInput placeholder={"Where is your Drop?"}*/}
-          {/*           placeholderTextColor={COLORS.black}*/}
-          {/*           numberOfLines={1}*/}
-          {/*           style={{textDecorationColor:COLORS.black, marginLeft:10,...FONTS.regularText}} />*/}
-          <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces} sourceTarget={false}/>
+          <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces} sourceTarget={false} placeholderText={'Enter Drop location'}/>
         </View>
         <View style={{display:'flex',height:60,flexDirection:'row',
           justifyContent:'space-between',backgroundColor:COLORS.white,
           width:'100%', padding:10,
           ...FONTS.box_shadow}}>
           <TouchableOpacity
-            onPress={() => {
-              //requestCameraPermission();
-              //getLocation();
-              //getLocationAsync();
-            }}
+            onPress={() => {}}
           >
             <View style={{flexDirection:'column', alignItems:'center'}}>
               <Image source={icons.home_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
@@ -258,9 +238,7 @@ const Dashboard: () => Node = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => {
-
-            }}
+            onPress={() => {}}
           >
             <View style={{flexDirection:'column', alignItems:'center'}}>
               <Image source={icons.order_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />

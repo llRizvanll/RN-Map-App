@@ -6,24 +6,22 @@ import { COLORS } from "../constants/theme";
 
 const deltaValue = 0.002;
 const GOOGLE_PLACES_API_KEY = 'AIzaSyAFPl0HjVzsH3nm7LdKPIZxVzR7Wmycvys';
-const GooglePlacesInput = ({sourceTarget,getDataFromGooglePlaces}) => {
+const GooglePlacesInput = ({placeholderText,sourceTarget,getDataFromGooglePlaces}) => {
 
 const refAutoComplete = useRef();
 
   return (
     <View style={styles.autocomplete_container}>
       <GooglePlacesAutocomplete
-        placeholder="Search"
+        placeholder={placeholderText}
         ref = {refAutoComplete}
         returnKeyType={'default'}
-
         query={{
           key: GOOGLE_PLACES_API_KEY,
           language: 'en', // language of the results
         }}
         onPress={(data, details ) => {
             console.log(details,data);
-
             getDataFromGooglePlaces(
                 {
                   main_text:data.structured_formatting.main_text,
@@ -35,7 +33,7 @@ const refAutoComplete = useRef();
                             longitudeDelta:deltaValue
                   }
                 }
-            );
+                );
           }
         }
         onFail={(error) => console.error(error)}
@@ -52,13 +50,13 @@ const refAutoComplete = useRef();
             flex : 1 ,
             backgroundColor : 'transparent' ,
             color:'#000',
-            height : 40 ,
+            height : 50,
             marginHorizontal : 0,
             borderTopWidth : 0 ,
             borderBottomWidth : 0 ,
           } ,
           textInput : {
-            height : 40 ,
+            height : 45,
             margin : 0 ,
             borderRadius : 0 ,
             paddingTop : 0 ,
@@ -109,7 +107,8 @@ const refAutoComplete = useRef();
         textInputProps={{ clearButtonMode: 'never',
           ref : input => {
             refAutoComplete.textInput = input;
-          }
+          },
+          placeholderTextColor: '#000'
         }}
         renderRightButton={()  =>
           <TouchableOpacity
@@ -117,8 +116,8 @@ const refAutoComplete = useRef();
             onPress={() => {
                 refAutoComplete.textInput.clear();
                 refAutoComplete.textInput.focus();
-            }
-          }>
+            }}
+          >
             <Image source={icons.clear_icon} style={{height:20,width:20}} />
           </TouchableOpacity>
         }
