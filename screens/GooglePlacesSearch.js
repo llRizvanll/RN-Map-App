@@ -6,7 +6,7 @@ import { COLORS } from "../constants/theme";
 
 const deltaValue = 0.002;
 const GOOGLE_PLACES_API_KEY = 'AIzaSyAFPl0HjVzsH3nm7LdKPIZxVzR7Wmycvys';
-const GooglePlacesInput = ({getDataFromGooglePlaces}) => {
+const GooglePlacesInput = ({sourceTarget,getDataFromGooglePlaces}) => {
 
 const refAutoComplete = useRef();
 
@@ -22,11 +22,19 @@ const refAutoComplete = useRef();
           language: 'en', // language of the results
         }}
         onPress={(data, details ) => {
-            console.log(details)
-            getDataFromGooglePlaces({ latitude:details.geometry.location.lat,
-              longitude:details.geometry.location.lng,
-              latitudeDelta:deltaValue,
-              longitudeDelta:deltaValue})
+            console.log(details,sourceTarget);
+
+            getDataFromGooglePlaces(
+                {
+                  sourceTarget: sourceTarget,
+                  region: {
+                            latitude:details.geometry.location.lat,
+                            longitude:details.geometry.location.lng,
+                            latitudeDelta:deltaValue,
+                            longitudeDelta:deltaValue
+                  }
+                }
+            );
           }
         }
         onFail={(error) => console.error(error)}
@@ -117,7 +125,6 @@ const refAutoComplete = useRef();
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   autocomplete_container: {
     flex: 1,

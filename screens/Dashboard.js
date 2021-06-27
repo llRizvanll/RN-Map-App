@@ -26,6 +26,7 @@ const Dashboard: () => Node = () => {
 
   //marker ref
   const _marker_map = useRef(null);
+  const _dest_marker_map = useRef(null);
 
   const handleMapReady = useCallback(() => {
     setMapReady(true);
@@ -36,6 +37,18 @@ const Dashboard: () => Node = () => {
     longitude: initLongitude,
     latitudeDelta: deltaValue,
     longitudeDelta: deltaValue,
+  })
+
+  const [dest_region, setDestRegion] = React.useState({
+    latitude: initLatitude,
+    longitude: initLongitude,
+    latitudeDelta: deltaValue,
+    longitudeDelta: deltaValue,
+  })
+  const [mapSourceTargetData, setMapTargetData] = React.useState({
+    sourceTarget: false,
+    destTarget: false,
+    region
   })
 
   //Location Reader
@@ -115,9 +128,10 @@ const Dashboard: () => Node = () => {
     }
   })
 
-  const getDataFromGooglePlaces = (region) => {
-    setRegion(region)
-    console.log(setRegion);
+  const getDataFromGooglePlaces = (mapSourceTargetData) => {
+    console.log(mapSourceTargetData);
+    mapSourceTargetData.sourceTarget ? setRegion(mapSourceTargetData.region) :
+      setDestRegion(mapSourceTargetData.region)
   }
 
   return (
@@ -166,6 +180,22 @@ const Dashboard: () => Node = () => {
               }}
             />
           </Marker>
+          <Marker
+            ref={_dest_marker_map}
+            coordinate={dest_region}
+            anchor={{ x: 0.5, y: 0.5 }}
+            draggable={true}
+            flat={true}
+            rotation={0}
+          >
+            <Image
+              source={icons.car_icon}
+              style={{
+                width: 40,
+                height: 40
+              }}
+            />
+          </Marker>
         </MapView>
         <View style={{ position:"absolute",top:0,minHeight:60,backgroundColor:COLORS.white,
           width:'100%',marginTop:2,
@@ -189,7 +219,7 @@ const Dashboard: () => Node = () => {
             {/*             lineHeight:20,*/}
             {/*             padding:10,*/}
             {/*             fontWeight:'bold'}} />*/}
-            <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces}/>
+            <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces} sourceTarget={true}/>
 
           </View>
 
@@ -205,13 +235,14 @@ const Dashboard: () => Node = () => {
         flexDirection:'column',
         bottom:0,
          }}>
-        <View style={{ height:60,backgroundColor:COLORS.white,
+        <View style={{ minHeight:60,backgroundColor:COLORS.white,
           width:'95%', marginLeft:10, marginBottom:5, borderRadius:10, padding:6,
           ...FONTS.box_shadow}}>
-          <TextInput placeholder={"Where is your Drop?"}
-                     placeholderTextColor={COLORS.black}
-                     numberOfLines={1}
-                     style={{textDecorationColor:COLORS.black, marginLeft:10,...FONTS.regularText}} />
+          {/*<TextInput placeholder={"Where is your Drop?"}*/}
+          {/*           placeholderTextColor={COLORS.black}*/}
+          {/*           numberOfLines={1}*/}
+          {/*           style={{textDecorationColor:COLORS.black, marginLeft:10,...FONTS.regularText}} />*/}
+          <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces} sourceTarget={false}/>
         </View>
         <View style={{display:'flex',height:60,flexDirection:'row',
           justifyContent:'space-between',backgroundColor:COLORS.white,
