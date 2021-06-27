@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, { useCallback, useRef, useState } from "react";
 import type {Node} from 'react';
 import { Dimensions, Image, StyleSheet, PermissionsAndroid, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -13,9 +5,12 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { COLORS, FONTS } from "../constants/theme";
 import icons from "../constants/icons";
 import Geolocation from "@react-native-community/geolocation";
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import GooglePlacesSearch from "./GooglePlacesSearch";
+
 
 const {width, height} = Dimensions.get('window');
-const deltaValue = 0.02;
+const deltaValue = 0.2;
 const zoomLevelUsed = 10;
 const altitudeValue = 1000;
 const mapPitch = 45;
@@ -24,7 +19,7 @@ const initLatitude = 37.78825;
 const initLongitude = -122.4324;
 
 
-
+const GOOGLE_PLACES_API_KEY = 'AIzaSyAFPl0HjVzsH3nm7LdKPIZxVzR7Wmycvys';
 const Dashboard: () => Node = () => {
   const [isMapReady, setMapReady] = useState(false);
   const _map = useRef(null);
@@ -120,6 +115,11 @@ const Dashboard: () => Node = () => {
     }
   })
 
+  const getDataFromGooglePlaces = (region) => {
+    setRegion(region)
+    console.log(setRegion);
+  }
+
   return (
     <View style={styles.container}>
       <View style={{ flex:1,flexDirection:'column'}}>
@@ -142,15 +142,13 @@ const Dashboard: () => Node = () => {
           showsUserLocation={true}
           showsMyLocationButton={true}
           moveOnMarkerPress={true}
-          zoomControlEnabled={true}
+          zoomControlEnabled={false}
           zoomTapEnabled={true}
           provider={PROVIDER_GOOGLE}
           region={region}
           zoomEnabled={true}
           toolbarEnabled={true}
           showsTraffic={false}
-          onRegionChangeComplete={region => setRegion(region)}
-
           >
           <Marker
             ref={_marker_map}
@@ -169,63 +167,87 @@ const Dashboard: () => Node = () => {
             />
           </Marker>
         </MapView>
-        <View style={{ position:"absolute",top:0,height:60,backgroundColor:COLORS.white,
-          width:'95%',marginTop:20,
-          marginLeft:10, borderRadius:10, padding:6,
-        ...FONTS.box_shadow}}>
-          <TextInput placeholder={"Please enter pickup"}
-                     placeholderTextColor={COLORS.blue}
-                     numberOfLines={1}
-                     style={{textDecorationColor:COLORS.black, marginLeft:10,...FONTS.regularText}} />
-        </View>
-        <View style={{ position:"absolute",top:65,height:60,backgroundColor:COLORS.white,
-          width:'95%',marginTop:20, marginLeft:10, borderRadius:10, padding:6,
-          ...FONTS.box_shadow}}>
-          <TextInput placeholder={"Please enter drop off"}
-                     placeholderTextColor={COLORS.blue}
-                     numberOfLines={1}
-                     style={{textDecorationColor:COLORS.black, marginLeft:10,...FONTS.regularText}} />
-        </View>
-
-
-      </View>
-
-      <View style={{  ...FONTS.home_menu_box_shadow,height:60,
-        display:'flex',position:'absolute',
-        padding:10,width:'100%',
-        bottom:0, backgroundColor: COLORS.white,
-        flexDirection:'row', justifyContent:'space-between' }}>
-
-        <TouchableOpacity
-          onPress={() => {
+        <View style={{ position:"absolute",top:0,minHeight:60,backgroundColor:COLORS.white,
+          width:'100%',marginTop:2,
+        }}>
+          <TouchableOpacity style={{marginTop:0, padding:5, backgroundColor:COLORS.white}} onPress={() => {
             requestCameraPermission();
             //getLocation();
             //getLocationAsync();
-          }}
-        >
-          <View style={{flexDirection:'column', alignItems:'center'}}>
-            <Image source={icons.home_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
-            <Text style={{color:COLORS.blue, ...FONTS.home_btm_text}}> Home</Text>
-          </View>
-        </TouchableOpacity>
+          }}>
+            <Text style={{...FONTS.h3, marginLeft:10, padding:5,color:COLORS.blue, fontWeight:'bold'}}>Turn on location permission ></Text>
+          </TouchableOpacity>
+          <View style={{height:1,backgroundColor:COLORS.gray}}></View>
+          <View style={{ minHeight:60,padding:5,flex:1,backgroundColor: '#ecf0f1',
+            textDecorationColor:COLORS.black, marginBottom:5, marginLeft:10,...FONTS.regularText,
+            }}>
+            {/*<TextInput placeholder={"Enter PICKUP location"}*/}
+            {/*           placeholderTextColor={COLORS.black}*/}
+            {/*           numberOfLines={1}*/}
+            {/*           style={{*/}
+            {/*             textDecorationColor:COLORS.black, marginLeft:5,...FONTS.regularText,*/}
+            {/*             lineHeight:20,*/}
+            {/*             padding:10,*/}
+            {/*             fontWeight:'bold'}} />*/}
+            <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces}/>
 
-        <TouchableOpacity
-          onPress={() => {
-
-          }}
-        >
-          <View style={{flexDirection:'column', alignItems:'center'}}>
-            <Image source={icons.order_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
-            <Text style={{color:COLORS.black, ...FONTS.home_btm_text}}> Orders</Text>
           </View>
-        </TouchableOpacity>
-        <View style={{flexDirection:'column', alignItems:'center'}}>
-          <Image source={icons.wallet_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
-          <Text style={{color:COLORS.black, ...FONTS.home_btm_text}}> Payment</Text>
+
+          <View style={{height:1,backgroundColor:COLORS.gray}}></View>
+
         </View>
-        <View style={{flexDirection: 'column', alignItems: 'center'}}>
-          <Image source={icons.account_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
-          <Text style={{color:COLORS.black, ...FONTS.home_btm_text}}> Account</Text>
+      </View>
+
+      <View style={{
+        position:'absolute',
+        width:'100%',
+        display:'flex',
+        flexDirection:'column',
+        bottom:0,
+         }}>
+        <View style={{ height:60,backgroundColor:COLORS.white,
+          width:'95%', marginLeft:10, marginBottom:5, borderRadius:10, padding:6,
+          ...FONTS.box_shadow}}>
+          <TextInput placeholder={"Where is your Drop?"}
+                     placeholderTextColor={COLORS.black}
+                     numberOfLines={1}
+                     style={{textDecorationColor:COLORS.black, marginLeft:10,...FONTS.regularText}} />
+        </View>
+        <View style={{display:'flex',height:60,flexDirection:'row',
+          justifyContent:'space-between',backgroundColor:COLORS.white,
+          width:'100%', padding:10,
+          ...FONTS.box_shadow}}>
+          <TouchableOpacity
+            onPress={() => {
+              //requestCameraPermission();
+              //getLocation();
+              //getLocationAsync();
+            }}
+          >
+            <View style={{flexDirection:'column', alignItems:'center'}}>
+              <Image source={icons.home_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
+              <Text style={{color:COLORS.blue, ...FONTS.home_btm_text}}> Home</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+
+            }}
+          >
+            <View style={{flexDirection:'column', alignItems:'center'}}>
+              <Image source={icons.order_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
+              <Text style={{color:COLORS.black, ...FONTS.home_btm_text}}> Orders</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={{flexDirection:'column', alignItems:'center'}}>
+            <Image source={icons.wallet_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
+            <Text style={{color:COLORS.black, ...FONTS.home_btm_text}}> Payment</Text>
+          </View>
+          <View style={{flexDirection: 'column', alignItems: 'center'}}>
+            <Image source={icons.account_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
+            <Text style={{color:COLORS.black, ...FONTS.home_btm_text}}> Account</Text>
+          </View>
         </View>
       </View>
     </View>

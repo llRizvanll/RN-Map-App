@@ -12,6 +12,7 @@ export const bag_btm_menu = require('../assets/icons/bag_icon.png');
 export const order_btm_menu = require('../assets/icons/order_icon.png');
 export const wallet_btm_menu = require('../assets/icons/wallet_icon.png');
 export const car_icon = require('../assets/icons/car.png');
+export const clear_icon = require('../assets/icons/clear.png');
 
 export default {
   menu,
@@ -27,5 +28,6 @@ export default {
   bag_btm_menu,
   order_btm_menu,
   wallet_btm_menu,
-  car_icon
+  car_icon,
+  clear_icon
 };
