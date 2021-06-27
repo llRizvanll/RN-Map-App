@@ -12,26 +12,26 @@ React Native Map app for android & iOS playes around with map feature
 <table>
   <tr>
     <td>
-      <img src="/images/1__.jpg" width=200>
+      <img src="/images/1__.jpg" width=400>
     </td>
     <td>
-      <img src="/images/2.jpg" width=200>
+      <img src="/images/2.jpg" width=400>
     </td>
    </tr>
   <tr>
     <td>
-      <img src="/images/7.jpg" width=200>
+      <img src="/images/7.jpg" width=400>
     </td>
     <td>
-      <img src="/images/6.jpg" width=200>
+      <img src="/images/6.jpg" width=400>
     </td>
   </tr>
   <tr>
     <td>
-      <img src="/images/5.jpg" width=200>
+      <img src="/images/5.jpg" width=400>
     </td>
     <td>
-      <img src="/images/4.jpg" width=200>
+      <img src="/images/4.jpg" width=400>
     </td>
   </tr>
 </table>
