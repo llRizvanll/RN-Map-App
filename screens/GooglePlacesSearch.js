@@ -22,10 +22,11 @@ const refAutoComplete = useRef();
           language: 'en', // language of the results
         }}
         onPress={(data, details ) => {
-            console.log(details,sourceTarget);
+            console.log(details,data);
 
             getDataFromGooglePlaces(
                 {
+                  main_text:data.structured_formatting.main_text,
                   sourceTarget: sourceTarget,
                   region: {
                             latitude:details.geometry.location.lat,
@@ -51,13 +52,13 @@ const refAutoComplete = useRef();
             flex : 1 ,
             backgroundColor : 'transparent' ,
             color:'#000',
-            height : 54 ,
+            height : 40 ,
             marginHorizontal : 0,
             borderTopWidth : 0 ,
             borderBottomWidth : 0 ,
           } ,
           textInput : {
-            height : 54 ,
+            height : 40 ,
             margin : 0 ,
             borderRadius : 0 ,
             paddingTop : 0 ,
@@ -118,7 +119,7 @@ const refAutoComplete = useRef();
                 refAutoComplete.textInput.focus();
             }
           }>
-            <Image source={icons.clear_icon} style={{height:28,width:28}} />
+            <Image source={icons.clear_icon} style={{height:20,width:20}} />
           </TouchableOpacity>
         }
       />

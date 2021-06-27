@@ -1,13 +1,24 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, Fragment } from "react";
 import type {Node} from 'react';
 import { Dimensions, Image, StyleSheet, PermissionsAndroid, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import { COLORS, FONTS } from "../constants/theme";
+import Geocoder from 'react-native-geocoding';
 import icons from "../constants/icons";
 import Geolocation from "@react-native-community/geolocation";
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import GooglePlacesSearch from "./GooglePlacesSearch";
+import Directions from "./Directions/Directions";
+import markerImage from '../assets/icons/marker.png';
 
+import {
+  LocationBox,
+  LocationText,
+  LocationTimeBox,
+  LocationTimeText,
+  LocationTimeTextSmall,
+} from './Directions/styles';
+
+import { getPixelSize } from "./utils";
 
 const {width, height} = Dimensions.get('window');
 const deltaValue = 0.2;
@@ -15,11 +26,12 @@ const zoomLevelUsed = 10;
 const altitudeValue = 1000;
 const mapPitch = 45;
 const mapHeading = 90;
-const initLatitude = 37.78825;
-const initLongitude = -122.4324;
+const initLatitude =  12.9981398;
+const initLongitude = 77.67208889999999;
 
 
 const GOOGLE_PLACES_API_KEY = 'AIzaSyAFPl0HjVzsH3nm7LdKPIZxVzR7Wmycvys';
+Geocoder.init(GOOGLE_PLACES_API_KEY);
 const Dashboard: () => Node = () => {
   const [isMapReady, setMapReady] = useState(false);
   const _map = useRef(null);
@@ -39,15 +51,16 @@ const Dashboard: () => Node = () => {
     longitudeDelta: deltaValue,
   })
 
+  const [mapDuration, setMapDuration] = useState();
+  let main_text = null;
   const [dest_region, setDestRegion] = React.useState({
-    latitude: initLatitude,
-    longitude: initLongitude,
-    latitudeDelta: deltaValue,
-    longitudeDelta: deltaValue,
+    main_text,
+    sourceTarget: true,
+    region
   })
   const [mapSourceTargetData, setMapTargetData] = React.useState({
-    sourceTarget: false,
-    destTarget: false,
+    main_text,
+    sourceTarget: true,
     region
   })
 
@@ -130,29 +143,17 @@ const Dashboard: () => Node = () => {
 
   const getDataFromGooglePlaces = (mapSourceTargetData) => {
     console.log(mapSourceTargetData);
-    mapSourceTargetData.sourceTarget ? setRegion(mapSourceTargetData.region) :
-      setDestRegion(mapSourceTargetData.region)
+    mapSourceTargetData.sourceTarget ? setMapTargetData(mapSourceTargetData) :
+      setDestRegion(mapSourceTargetData)
   }
 
+  let [ destination, duration, location ] = useState();
   return (
     <View style={styles.container}>
       <View style={{ flex:1,flexDirection:'column'}}>
         <MapView
           ref={_map}
-          style={isMapReady ? styles.mapcontainer : {}}
-          onMapReady={handleMapReady}
-          initialCamera={{
-            center: {
-              latitude: region.latitude,
-              longitude: region.longitude,
-              latitudeDelta: deltaValue,
-              longitudeDelta: deltaValue,
-            },
-            pitch: mapPitch,
-            heading: mapHeading,
-            altitude: altitudeValue,
-            zoom: zoomLevelUsed,
-          }}
+          style={styles.mapcontainer}
           showsUserLocation={true}
           showsMyLocationButton={true}
           moveOnMarkerPress={true}
@@ -162,40 +163,35 @@ const Dashboard: () => Node = () => {
           region={region}
           zoomEnabled={true}
           toolbarEnabled={true}
-          showsTraffic={false}
-          >
-          <Marker
-            ref={_marker_map}
-            coordinate={region}
-            anchor={{ x: 0.5, y: 0.5 }}
-            draggable={true}
-            flat={true}
-            rotation={0}
-          >
-            <Image
-              source={icons.car_icon}
-              style={{
-                width: 40,
-                height: 40
+          showsTraffic={false}>
+          <Fragment>
+            <Directions
+              origin={mapSourceTargetData.region}
+              destination={dest_region.region}
+              onReady={result => {
+                console.log(result);
+                setMapDuration(Math.floor(result.duration))
               }}
             />
-          </Marker>
-          <Marker
-            ref={_dest_marker_map}
-            coordinate={dest_region}
-            anchor={{ x: 0.5, y: 0.5 }}
-            draggable={true}
-            flat={true}
-            rotation={0}
-          >
-            <Image
-              source={icons.car_icon}
-              style={{
-                width: 40,
-                height: 40
-              }}
-            />
-          </Marker>
+              <Marker
+                coordinate={dest_region.region}
+                anchor={{ x: 0, y: 0 }}
+                image={markerImage}>
+                <LocationBox>
+                  <LocationText>{dest_region.main_text}</LocationText>
+                </LocationBox>
+              </Marker>
+
+              <Marker coordinate={mapSourceTargetData.region} anchor={{ x: 0, y: 0 }}>
+                <LocationBox>
+                  <LocationTimeBox>
+                    <LocationTimeText>{mapDuration}</LocationTimeText>
+                    <LocationTimeTextSmall>MIN</LocationTimeTextSmall>
+                  </LocationTimeBox>
+                  <LocationText>{mapSourceTargetData.main_text}</LocationText>
+                </LocationBox>
+              </Marker>
+          </Fragment>
         </MapView>
         <View style={{ position:"absolute",top:0,minHeight:60,backgroundColor:COLORS.white,
           width:'100%',marginTop:2,
@@ -290,6 +286,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mapcontainer: {
+    flex:1,
     width: width,
     height: height-80,
   },
