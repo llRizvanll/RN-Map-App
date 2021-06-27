@@ -147,7 +147,6 @@ const Dashboard: () => Node = () => {
       setDestRegion(mapSourceTargetData)
   }
 
-  let [ destination, duration, location ] = useState();
   return (
     <View style={styles.container}>
       <View style={{ flex:1,flexDirection:'column'}}>
@@ -183,6 +182,7 @@ const Dashboard: () => Node = () => {
               </Marker>
 
               <Marker coordinate={mapSourceTargetData.region} anchor={{ x: 0, y: 0 }}>
+                <Image source={icons.car_icon} style={{ height:20,width:20}}/>
                 <LocationBox>
                   <LocationTimeBox>
                     <LocationTimeText>{mapDuration}</LocationTimeText>
@@ -208,10 +208,8 @@ const Dashboard: () => Node = () => {
             <GooglePlacesSearch getDataFromGooglePlaces={getDataFromGooglePlaces} sourceTarget={true} placeholderText={'Enter PICKUP location'}/>
           </View>
           <View style={{height:0.5,backgroundColor:COLORS.gray}}></View>
-
         </View>
       </View>
-
       <View style={{
         position:'absolute',
         width:'100%',
@@ -229,17 +227,14 @@ const Dashboard: () => Node = () => {
           width:'100%', padding:10,
           ...FONTS.box_shadow}}>
           <TouchableOpacity
-            onPress={() => {}}
-          >
+            onPress={() => {}}>
             <View style={{flexDirection:'column', alignItems:'center'}}>
               <Image source={icons.home_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
               <Text style={{color:COLORS.blue, ...FONTS.home_btm_text}}> Home</Text>
             </View>
           </TouchableOpacity>
-
           <TouchableOpacity
-            onPress={() => {}}
-          >
+            onPress={() => {}}>
             <View style={{flexDirection:'column', alignItems:'center'}}>
               <Image source={icons.order_btm_menu} resizeMode = "contain" style={{height:24,width:24}} />
               <Text style={{color:COLORS.black, ...FONTS.home_btm_text}}> Orders</Text>
