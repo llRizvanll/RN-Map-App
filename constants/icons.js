@@ -13,6 +13,8 @@ export const order_btm_menu = require('../assets/icons/order_icon.png');
 export const wallet_btm_menu = require('../assets/icons/wallet_icon.png');
 export const car_icon = require('../assets/icons/car.png');
 export const clear_icon = require('../assets/icons/clear.png');
+export const launcher_icon = require('../assets/icons/ic_launcher.png');
+export const launcher_image = require('../assets/images/splashscreen.jpg');
 
 export default {
   menu,
@@ -29,5 +31,7 @@ export default {
   order_btm_menu,
   wallet_btm_menu,
   car_icon,
-  clear_icon
+  clear_icon,
+  launcher_icon,
+  launcher_image
 };
