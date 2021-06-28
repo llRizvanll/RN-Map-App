@@ -13,7 +13,7 @@ class Splashscreen extends React.Component{
   componentDidMount() {
     setTimeout(()=> {
       this.props.navigation.navigate('Dashboard');
-    }, 10000)
+    }, 5000)
   }
 
   render() {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   image: {
     flex: 10,
     resizeMode: "cover",
-    height:500,
+    height:'68%',
     justifyContent: "flex-end"
   },
   text: {
